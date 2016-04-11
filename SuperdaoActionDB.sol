@@ -1,3 +1,5 @@
+    import "github.com/adibas03/ethereum-grove/contracts/Grove.sol";
+
 library GroveAPI {
     struct Index {
         bytes32 id;
@@ -20,9 +22,10 @@ library GroveAPI {
     function remove(Index storage name, bytes32 id) public;
 }
 
-import("SuperdaoActionManagerEnabled.sol");
-contract SuperdaoActionDB is SuperdaoActionManagerEnabled {
-    Grove.Index action;
+import "SuperdaoActionManagerEnabled";
+contract SuperdaoActionDb is SuperdaoActionManagerEnabled {
+    GroveAPI.Index action;
+    Grove sGrove;
     
     //ensure call is from action manager
     modifier verifyAm(){
@@ -36,10 +39,10 @@ contract SuperdaoActionDB is SuperdaoActionManagerEnabled {
         }
     }
     function addAction(bytes32 name, address addr)verifyAm() returns (bool){
-        Grove.insert(action, name, addr);
+       // sGrove.insert(action.name, name, addr);
     }
     
-    function removeAction(bytes32 name, bytes32 id)verifyAm()checkNull() returns (bool){
-        Grove.remove(name, id );
+    function removeAction(bytes32 name)verifyAm()checkNull() returns (bool){
+       // Grove.remove(name, id );
     }
 }
