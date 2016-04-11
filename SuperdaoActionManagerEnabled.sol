@@ -1,13 +1,22 @@
-import("/ContractProvider.sol");
-import("/DougEnabled.sol");
+import "SuperdaoContractProvider";
+import "SuperdaoDougEnabled";
 
-contract SuperdaoActionManagerEnabled is DougEnabled {
+contract SuperdaoActionManagerEnabled is SuperdaoDougEnabled {
     //to make sure action manager is the caller
+    address sDOUG;
+    
+    modifier onlyCreator(){
+        if(msg.sender != sDOUG)
+        throw;
+    }
+    
+    
     function isActionManager()onlyCreator() internal constant returns (bool) {
-        address am = ContractProvider(sDOUG).contracts("actions");
+        address am = SuperdaoContractProvider(sDOUG).contracts("actions");
         if(msg.sender == am){
             return true;
         }
+		return false;
     }
-    return false;
+    
 }

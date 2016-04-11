@@ -1,3 +1,6 @@
+import "github.com/adibas03/ethereum-grove/contracts/Grove.sol";
+
+
 library GroveAPI {
     struct Index {
         bytes32 id;
@@ -22,12 +25,16 @@ library GroveAPI {
 
 
 
-import("/SuperdaoDougEnabled.sol");
+import "SuperdaoDougEnabled";
+import "SuperdaoDougContractsDB";
 
 contract SuperdaoDoug{
     address contractOwner;
+    SuperdaoContractDB contractsDb;
+    Grove sGrove;
     
-    Grove.Index contract_s;
+    
+    GroveAPI.Index contract_s;
 	
     function SuperdaoDoug(){
         contractOwner = msg.sender;
@@ -40,24 +47,24 @@ contract SuperdaoDoug{
 	
     function addContract(bytes32 name, address addr)onlyCreator() returns (bool result){
        SuperdaoDougEnabled sde = SuperdaoDougEnabled(addr);
-       if(!de.setSuperdaoDougAddress(address(this))){
+       if(!sde.setSuperdaoDougAddress(address(this))){
             return false;
         }else{
-       //  contracts[name] = addr;
-       Grove.insert(contract_s,name,addr);
+          contractsDb.addContract(name, addr);
+         //sGrove.insert(contract_s.name,name,addr);
         return true;   
         }
         
     }
     
-    function removeContract(bytes name)onlyCreator() returns (bool result){
-        address cName = contracts[name];
+    function removeContract(bytes32 name)onlyCreator() returns (bool result){
+        address cName = contractsDb.getContract(name);
         if(cName == 0x0){
             return false;
         }else{
             SuperdaoDoug(cName).remove();
-         //   contracts[name] = 0x0;
-         Grove.remove(name);
+            contractsDb.removeContract(name);
+        // Grove.remove(name);
             return true;
         }
     }
