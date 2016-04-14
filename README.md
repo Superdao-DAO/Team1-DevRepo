@@ -1,5 +1,12 @@
 # README #
 
+Collaboration excercise to increase Efficiency of contracts within Superdao.
+Utilizing the Doug and action contracts.
+
+Codes structured to work straight from browser solidity.
+To work from other tools,
+You might need to add the full path or file extension to the import statements.
+
 This README would normally document whatever steps are necessary to get your application up and running.
 
 ### What is this repository for? ###
