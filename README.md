@@ -9,4 +9,4 @@ You might need to add the full path or file extension to the import statements.
 
 Browser solidity Gist
 
-https://chriseth.github.io/browser-solidity/?gist=bab076981e9cc325c0b6272215933ac5
+https://chriseth.github.io/browser-solidity/?gist=cb8304b65ddb5f7dc50a1a36a363ee71
