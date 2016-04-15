@@ -1,48 +1,47 @@
-    import "github.com/adibas03/ethereum-grove/contracts/Grove.sol";
+import "SuperdaoActions";
 
-library GroveAPI {
-    struct Index {
-        bytes32 id;
-        bytes32 name;
-        bytes root;
-        mapping(bytes32 => Node) nodes;
-    }
-    
-    struct Node {
-        bytes32 nodeId;
-        bytes32 indexId;
-        bytes32 id;
-        int value;
-        bytes32 parent;
-        bytes32 left;
-        bytes32 right;
-        uint height;
-    }
-    function insert(Index storage index, bytes32 id, int value) public;
-    function remove(Index storage name, bytes32 id) public;
-}
-
-import "SuperdaoActionManagerEnabled";
 contract SuperdaoActionDb is SuperdaoActionManagerEnabled {
-    GroveAPI.Index action;
-    Grove sGrove;
-    
+	// This is where we keep all the actions.
+    mapping (bytes32 => address) public Superdaoactions;
+	
     //ensure call is from action manager
     modifier verifyAm(){
         if(!isActionManager()){
             throw;
         }
     }
-    modifier checkNull(){
-        if(action.name == 0){
+    modifier checkNull(bytes32 name){
+        if(Superdaoactions[name] == 0x0){
             throw;
         }
     }
-    function addAction(bytes32 name, address addr)verifyAm() returns (bool){
-       // sGrove.insert(action.name, name, addr);
+	
+	// To make sure we have an add action action, we need to auto generate
+    // it as soon as we got the DOUG address.
+    function setDougAddress(address dAddr) returns (bool result) {
+      super.setSuperdaoDougAddress(dAddr);
+
+      var addaction = new ActionAddAction();
+      // If this fails, then something is wrong with the add action contract.
+      // Will be events logging these things in later parts.
+      if(!SuperdaoDougEnabled(addaction).setSuperdaoDougAddress(dAddr)){
+          return false;
+      }
+      Superdaoactions["addaction"] = address(addaction);
     }
+	
+	
+    function addAction(bytes32 name, address addr)verifyAm() returns (bool){
+		
+		bool sdda = SuperdaoDougEnabled(addr).setSuperdaoDougAddress(sDOUG);
+		if(!sdda)return false;
+		
+		Superdaoactions[name] = addr;
+		return true;
+	}
     
-    function removeAction(bytes32 name)verifyAm()checkNull() returns (bool){
-       // Grove.remove(name, id );
+    function removeAction(bytes32 name)verifyAm()checkNull(name) returns (bool){
+		Superdaoactions[name] = 0x0;
+		return true;
     }
 }

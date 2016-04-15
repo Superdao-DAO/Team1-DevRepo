@@ -1,49 +1,45 @@
-import "SuperdaoDougEnabled";
-import "SuperdaoContractProvider";
 import "SuperdaoActionDb";
+import "SuperdaoLogs";
 
 contract SuperdaoActionManager is SuperdaoDougEnabled {
-    address activeAction;
-    address actionDb;
-    address actn;
-    address sDoug;
-    bytes32 actionName;
-    function SuperdaoActionManager(){
-        
-    }
-    
-modifier check(){
-    actionDb = SuperdaoContractProvider(sDoug).contracts("sdaoactiondb");
-    //actn =  SuperdaoActionDb(actionDb).actions(actionName);
+ 
+	
+	address activeAction;
+	address actn;
+	address actionDb = 0x0;
+	
+	
+	modifier check_actionDb(bytes32 actionName){
+    actionDb = SuperdaoContractProvider(sDOUG).contracts("sdaoactiondb");
     if(actionDb == 0x0){
+		SuperdaoLogs(sDOUG).save_log(actionName,false);
         throw;
     }else if(actn == 0x0){
+		SuperdaoLogs(sDOUG).save_log(actionName,false);
         throw;
     }
-}
-modifier checkAction(){
-    actionDb = SuperdaoContractProvider(sDoug).contracts("sdaoactiondb");
-    if(actionDb ==0x0){
-        throw;
-    }
-}
-    function execute(bytes32 actionName, bytes data)check() returns (bool){
+	}
+	modifier checkAction(bytes32 actionName){
+		actn =  SuperdaoActionDb(actionDb).Superdaoactions(actionName);
+		if(actn ==0x0){
+			SuperdaoLogs(sDOUG).save_log(actionName,false);
+			throw;
+		}
+	}
+
+
+	
+	
+	//Consensus permission to be added later
+    
+    function execute(bytes32 actionName, bytes data)check_actionDb(actionName) checkAction(actionName) returns (bool){
         activeAction = actn;
-        
         actn.call(data);
         activeAction = 0x0;
+		SuperdaoLogs(sDOUG).save_log(actionName,true);
         return true;
     }
     
-    function addAction(bytes32 name, address addr)checkAction() returns (bool){
-        bool res1 = SuperdaoActionDb(actionDb).addAction(name,addr);
-        return res1;
-    }
-    
-    function removeAction(bytes32 name)checkAction() returns (bool) {
-        bool res1 =SuperdaoActionDb(actionDb).removeAction(name);
-        return res1;
-    }
     
     function validate(address addr) constant returns (bool){
         return addr == activeAction;

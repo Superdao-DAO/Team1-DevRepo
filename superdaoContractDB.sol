@@ -1,21 +1,49 @@
-import "SuperdaoDougEnabled";
+import "github.com/adibas03/ethereum-grove/contracts/Grove.sol";
 
-contract SuperdaoContractDB{
+library GroveAPI {
+    struct Index {
+        bytes32 id;
+        bytes32 name;
+        bytes root;
+        mapping(bytes32 => Node) nodes;
+    }
+    
+    struct Node {
+        bytes32 nodeId;
+        bytes32 indexId;
+        bytes32 id;
+        int value;
+        bytes32 parent;
+        bytes32 left;
+        bytes32 right;
+        uint height;
+    }
+    function insert(Index storage index, bytes32 id, int value) public;
+    function remove(Index storage name, bytes32 id) public;
+}
+
+import "SuperdaoActionManager";
+
+contract SuperdaoContractDb is SuperdaoDougEnabled{
 	
-	address sDOUG;
+    address addr;
 	mapping(bytes32 => address) contracts;
 	
-	modifier onlyCreator(){
+	//Integration with Grove to be follow
+	//Grove sGrove;
+    // GroveAPI.Index contract_s;
+	
+	
+	modifier onlyDoug(){
 		if(msg.sender != sDOUG){
 			throw;
 		}
 	}
 	
-	function SuperdaoContractDB() {
-	}
 	
-	function addContract(bytes32 name,address addr) onlyCreator() returns (bool){
-		if(contracts[name] != 0x0){
+	
+	function addContract(bytes32 name,address addr) onlyDoug() returns (bool){
+		if(contracts[name] == 0x0 && contracts['sdaoactiondb'] != 0x0){
 			contracts[name] = addr;
 			return true;
 		}
@@ -23,7 +51,7 @@ contract SuperdaoContractDB{
 	}
 	
 	
-	function removeContract(bytes32 name) onlyCreator returns (bool){
+	function removeContract(bytes32 name) onlyDoug returns (bool){
 		if(contracts[name] == 0x0){
 			return false;
 		}
